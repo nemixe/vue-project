@@ -47,14 +47,17 @@
                             </div>
                         </div>
                     </div>
-                    <div v-for="data in toDo" @click="data.isDone = !data.isDone" class="tile is-child notification columns hover-list" style="border-left: 2px solid darkgrey; margin: 4px 0px;">
-                        <div class="column is-10">
-                            <div class="title is-5 has-text-grey" :class="{strikethrough: data.isDone}">
-                                {{data.text}}
+
+                    <div v-for="(data, index) in toDo" style="position: relative">
+                        <div @click="data.isDone = !data.isDone" class="tile is-child notification columns hover-list" style="border-left: 2px solid darkgrey; margin: 4px 0px;">
+                            <div class="column is-10">
+                                <div class="title is-5 has-text-grey" :class="{strikethrough: data.isDone}">
+                                    {{data.text}}
+                                </div>
                             </div>
                         </div>
-                        <div class="column is-pulled-right">
-                            <span class="icon is-pulled-right" @click="remove">
+                        <div class="column is-pulled-right hover-list" style="position: absolute;top:20%;right: 20px;border-radius: 50%">
+                            <span class="icon is-pulled-right" @click="remove(index)">
                                 <i class="fas fa-times"></i>
                             </span>
                         </div>
@@ -67,7 +70,7 @@
                             </div>
                         </div>
                         <div class="column is-1">
-                            <input type="button" class="button is-light is-pulled-right" value="Add" style="width: 100%" @click="addTodo"/>
+                            <input type="button" class="button is-light is-pulled-right has-text-weight-semibold" value="Add" style="width: 100%" @click="addTodo"/>
                         </div>
                     </div>
                 </article>
@@ -103,14 +106,14 @@
                             </div>
                         </div>
                     </div>
-                    <div v-for="data in toDo" v-if="data.isDone === true" @click="data.isDone = !data.isDone" class="tile is-child notification columns hover-list" style="border-left: 2px solid darkgrey; margin: 4px 0px;">
+                    <div v-for="(data, index) in toDo" v-if="data.isDone === true" @click="data.isDone = !data.isDone" class="tile is-child notification columns hover-list" style="border-left: 2px solid darkgrey; margin: 4px 0px;">
                         <div class="column is-10">
                             <div class="title is-5 has-text-grey" :class="{strikethrough: data.isDone}">
                                 {{data.text}}
                             </div>
                         </div>
                         <div class="column is-pulled-right">
-                            <span class="icon is-pulled-right" @click="remove">
+                            <span class="icon is-pulled-right" @click="remove(index)">
                                 <i class="fas fa-times"></i>
                             </span>
                         </div>
@@ -180,8 +183,7 @@
                     this.toDoCurText = ''
                 }
             },
-            remove: function(item) {
-                var index = this.toDo.findIndex(i => i.text === item)
+            remove: function(index) {
                 for(var i = index; i < this.toDo.length; i++) {
                     this.toDo[i] = this.toDo[i+1]
                 }
