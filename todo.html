@@ -1,0 +1,193 @@
+<!DOCTYPE html >
+<html lang="en" class="has-background-info" style="min-height: auto;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <script src="https://unpkg.com/vue"></script>
+</head>
+<style>
+.hover-list:hover {
+    background-color: #e6e6e6;
+}
+.strikethrough {
+    text-decoration: line-through;
+}
+</style>
+<body >
+    <div id="app">
+        <div v-if="route == 'home'" class="container" style="min-height: 100vh"> 
+            <div class="tile is-parent" style="margin: auto 0px;height: 80vh;height: 100%;">
+                <article class="tile is-child notification">
+                    <div style="position:sticky;top:0px;z-index: 2;padding: 0px 1 0px;border-bottom: 2px solid lightgrey" class="notification">
+                        <div class="columns is-marginless">
+                            <div class="column">
+                                <div class="title">Todo</div>
+                            </div>
+                            <div class="column is-3">
+                                <nav class="panel is-pulled-right" style="border-radius: 4px;">
+                                    <p class="panel-tabs" style="border-radius: 4px;border: none">
+                                        <a class="navbar-item is-active" @click="route = 'home'" style="border-bottom: 2px solid grey;text-decoration: none;">
+                                            <span class="icon" style="margin-right: 0px;">
+                                                <i class="fas fa-address-book"></i>
+                                            </span>
+                                            Today
+                                        </a>
+                                        <a class="navbar-item" @click="route = 'done'" style="text-decoration: none;">
+                                            <span class="icon" style="margin-right: 0px;">
+                                                <i class="fas fa-check"></i>
+                                            </span>
+                                            Done
+                                        </a>
+                                    </p>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-for="data in toDo" @click="data.isDone = !data.isDone" class="tile is-child notification columns hover-list" style="border-left: 2px solid darkgrey; margin: 4px 0px;">
+                        <div class="column is-10">
+                            <div class="title is-5 has-text-grey" :class="{strikethrough: data.isDone}">
+                                {{data.text}}
+                            </div>
+                        </div>
+                        <div class="column is-pulled-right">
+                            <span class="icon is-pulled-right" @click="remove">
+                                <i class="fas fa-times"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="columns is-marginless is-paddingless">
+                        <div class="column is-11 field" style="margin:0px">
+                            <div class="control">
+                                <input v-model="toDoCurText" type="text" class="input" placeholder="Add your daily To Do" @keyup.enter="addTodo"/>
+                            </div>
+                        </div>
+                        <div class="column is-1">
+                            <input type="button" class="button is-light is-pulled-right" value="Add" style="width: 100%" @click="addTodo"/>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <!-- done -->
+        <div v-if="route == 'done'" class="container" style="min-height: 100vh"> 
+            <div class="tile is-parent" style="margin: auto 0px;height: 80vh;height: 100%;">
+                <article class="tile is-child notification">
+                    <div style="position:sticky;top:0px;z-index: 2;padding: 0px 1 0px;border-bottom: 2px solid lightgrey" class="notification">
+                        <div class="columns is-marginless">
+                            <div class="column">
+                                <div class="title">Todo</div>
+                            </div>
+                            <div class="column is-3">
+                                <nav class="panel is-pulled-right" style="border-radius: 4px;">
+                                    <p class="panel-tabs" style="border-radius: 4px;border: none">
+                                        <a class="navbar-item" @click="route = 'home'" style="text-decoration: none;">
+                                            <span class="icon" style="margin-right: 0px;">
+                                                <i class="fas fa-address-book"></i>
+                                            </span>
+                                            Today
+                                        </a>
+                                        <a class="navbar-item is-active" @click="route = 'done'" style="border-bottom: 2px solid grey;text-decoration: none;">
+                                            <span class="icon" style="margin-right: 0px;">
+                                                <i class="fas fa-check"></i>
+                                            </span>
+                                            Done
+                                        </a>
+                                    </p>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-for="data in toDo" v-if="data.isDone === true" @click="data.isDone = !data.isDone" class="tile is-child notification columns hover-list" style="border-left: 2px solid darkgrey; margin: 4px 0px;">
+                        <div class="column is-10">
+                            <div class="title is-5 has-text-grey" :class="{strikethrough: data.isDone}">
+                                {{data.text}}
+                            </div>
+                        </div>
+                        <div class="column is-pulled-right">
+                            <span class="icon is-pulled-right" @click="remove">
+                                <i class="fas fa-times"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div v-if="isTodoCompleteAll != false" class="has-text-centered has-text-weight-semibold has-color-tex">
+                        No task is completed
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+
+    new Vue({
+        el:'#app',
+        data: {
+            route: 'home',
+            addTodoEnabled: false,
+            toDoCurText: '',
+            toDo: [
+                {
+                    text: "text 3",
+                    isFavorite: true,
+                    isDone: false
+                },
+                {
+                    text: "text 2",
+                    isFavorite: false,
+                    isDone: true
+                },
+                {
+                    text: "text 1",
+                    isFavorite: false,
+                    isDone: false
+                }
+            ]
+        },
+        computed: {
+            reversedTodo() {
+                return this.toDo.slice().reverse()
+            },
+            isTodoCompleteAll() {
+                let completed;
+                this.toDo.map( e => {
+                    if(e.isDone === false){
+                        return true
+                    }
+                    completed = false
+                })
+
+                return completed
+            }
+        },
+        methods: {
+            toggleAddToDo: function() {
+                var toggle = !this.addTodoEnabled
+                this.addTodoEnabled ? this.addTodoEnabled = toggle : this.addTodoEnabled = toggle
+            },
+            addTodo: function() {
+                if(this.toDoCurText != '') {
+                    this.toDo.push({
+                        text: this.toDoCurText,
+                        isFavorite: false,
+                        isDone: false
+                    })
+                    this.toDoCurText = ''
+                }
+            },
+            remove: function(item) {
+                var index = this.toDo.findIndex(i => i.text === item)
+                for(var i = index; i < this.toDo.length; i++) {
+                    this.toDo[i] = this.toDo[i+1]
+                }
+                this.toDo.pop()
+            },
+        }
+    })
+</script>
+</html>
